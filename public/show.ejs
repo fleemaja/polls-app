@@ -3,35 +3,26 @@
 <html>
 
 	<head>
-		<title>Clementine.js - The elegant and lightweight full stack JavaScript boilerplate.</title>
+		<title><%= poll.title %></title>
 		
 		<link href="/public/css/main.css" rel="stylesheet" type="text/css">
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 	</head>
 
 	<header>
-		<p>Welcome, <span id="display-name"></span>!</p>
-		<a class="menu" href="/profile">Profile</a>
-		<p>|</p>
-		<a class="menu" href="/logout">Logout</a>
-		<p>|</p>
-		<a class="menu" href="/newpoll">New Poll</a>
+	    <nav class="navbar navbar-default navbar-static-top">
+            <div class="navbar-header">
+    	      <a class="navbar-brand" href="/">Polls</a>
+    	    </div>
+            <ul class="nav navbar-nav navbar-right">
+              <li><a class="menu" href="/profile">Profile</a></li>
+              <li><a class="menu" href="/newpoll">New Poll</a></li>
+    		  <li><a class="menu" href="/logout">Logout</a></li>
+            </ul>
+        </nav>
 	</header>
 
 	<body>
-		<div class="container">
-			<img src="/public/img/clementine_150.png" />
-			<br />
-			<p class="clementine-text">Clementine.js</p>
-		</div>
-	
-		<div class="container">
-			<p>You have clicked the button <span id="click-nbr"></span> times.</p>
-			<br />
-			<div class="btn-container">
-				<button type="submit" class="btn btn-add">CLICK ME!</button>
-				<button class="btn btn-delete">RESET</button>
-			</div>
-		</div>
 		
 		<div class="jumbotron">
 		    <form action="/polls/<%= poll.id %>" method="post">
@@ -43,54 +34,59 @@
                 <input class="btn btn-primary btn-block" type="submit" value="Submit">
             </form>
             
+            <% if (user != null && poll.user.toString() === user) { %>
+                <form action="/delete/<%= poll.id %>" method="post">
+                    <button class="btn btn-danger btn-block">Remove this Poll</button>
+                </form>
+            <% } %>
 		</div>
 		
-		<canvas id="myDoughnutChart" width="10" height="10"></canvas>
+		<canvas id="myDoughnutChart" width="10" height="10" 
+		        chart-data="<%= poll.options.map(function(option) { return option.votes }) %>" 
+		        chart-labels="<%= poll.options.map(function(option) { return option.text }) %>">
+		</canvas>
 		
 		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.6/Chart.bundle.min.js"></script>
 		
 		<script>
 		    
-$( document ).ready(function() {
-    var ctx = $("#myDoughnutChart");
-    
-    $("input:radio:first").attr('checked', true);
-    
-    // var doesThisWork = <%= poll.options[0] %>;
-    
-    // var optionLabels = poll.options.map(function(option) { return option.text });
-    // var optionVotes = poll.options.map(function(option) { return option.votes });
-    
-    var myDoughnutChart = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: [
-        "Red",
-        "Blue",
-        "Yellow"
-    ],
-    datasets: [
-        {
-            data: [300, 50, 100],
-            backgroundColor: [
-                "#FF6384",
-                "#36A2EB",
-                "#FFCE56"
-            ],
-            hoverBackgroundColor: [
-                "#FF6384",
-                "#36A2EB",
-                "#FFCE56"
-            ]
-        }]
-        },
-        options: {
-            maintainAspectRatio: false,
-            responsive: true
-        }
-    });
-});
+            $( document ).ready(function() {
+                var ctx = $("#myDoughnutChart");
+                
+                var optionVotes = ctx.get(0).getAttribute("chart-data").split(",").map(function(item) {
+                                      return parseInt(item, 10);
+                                  });
+                var optionLabels = ctx.get(0).getAttribute("chart-labels").split(",");
+                
+                $("input:radio:first").attr('checked', true);
+                
+                var myDoughnutChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: optionLabels,
+                datasets: [
+                    {
+                        data: optionVotes,
+                        backgroundColor: [
+                            "rgba(247,70,74,0.6)",
+                            "rgba(70,191,189,0.6)",
+                            "rgba(253,180,92,0.6)",
+                            "rgba(151,187,205,0.6)",
+                            "rgba(220,220,220,0.6)",
+                            "rgba(148,159,177,0.6)",
+                            "rgba(77,83,96,0.6)"
+                        ]
+                    }]
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        responsive: true,
+                        animationEasing: "easeOutQuart",
+                        animationSteps: 40
+                    }
+                });
+            });
 		</script>
 	</body>
 </html>

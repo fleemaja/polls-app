@@ -3,11 +3,13 @@
 var sanitizeHtml = require('sanitize-html');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+var relationship = require("mongoose-relationship");
+var User = require('./users.js');
 
-var Poll = new Schema({
+var PollSchema = new Schema({
     created: Date,
-	  title: String,
-    owner: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+	title: String,
+    user: { type:Schema.ObjectId, ref:"User", childPath:"polls" },
     options: [
         {
             text: String,
@@ -18,7 +20,7 @@ var Poll = new Schema({
 });
 
 // Automatically remove HTML from public facing fields on save
-Poll.pre('save', function(next) {
+PollSchema.pre('save', function(next) {
   var sanitize = {
     allowedTags: [],
     allowedAttributes: []
@@ -32,4 +34,7 @@ Poll.pre('save', function(next) {
   next();
 });
 
-module.exports = mongoose.model('Poll', Poll);
+
+PollSchema.plugin(relationship, { relationshipPathName:'user' });
+
+module.exports = mongoose.model('Poll', PollSchema);

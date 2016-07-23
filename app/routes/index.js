@@ -76,4 +76,9 @@ module.exports = function (app, passport) {
 	   .post(function(req, res) {
 	   	   pollController.vote(req, res);
 	  });
+	  
+    app.route('/delete/:id')
+       .post(function(req, res) {
+       	   pollController.destroy(req, res);
+       })
 };

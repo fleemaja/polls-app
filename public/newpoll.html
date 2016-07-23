@@ -3,6 +3,19 @@
     <link href="/public/css/main.css" rel="stylesheet" type="text/css">
 </head>
 
+<header>
+    <nav class="navbar navbar-default navbar-static-top">
+        <div class="navbar-header">
+	      <a class="navbar-brand" href="/">Polls</a>
+	    </div>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a class="menu" href="/profile">Profile</a></li>
+          <li><a class="menu" href="/newpoll">New Poll</a></li>
+		  <li><a class="menu" href="/logout">Logout</a></li>
+        </ul>
+    </nav>
+</header>
+
 <div class="jumbotron">
     <form action="/newpoll" method="post">
         <fieldset class="form-group">

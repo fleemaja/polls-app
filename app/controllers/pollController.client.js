@@ -17,9 +17,11 @@ exports.show = function(req, res) {
   Poll.findById(req.params.id, function (err, poll) {
     if(err) { return handleError(res, err); }
     if(!poll) { return res.status(404).send('Not Found'); }
-    res.render(path + '/public/show.ejs', {
-				poll: poll
-		});
+    var showObj = { poll: poll, user: null };
+    if (req.user) {
+      showObj['user'] = req.user._id.toString()
+		}
+    res.render(path + '/public/show.ejs', showObj);
   });
 };
 
@@ -35,11 +37,14 @@ exports.create = function(req, res) {
     });
   }
   parsedPoll.options = parsedOptions;
+  parsedPoll.user = req.user.id;
   Poll.create(parsedPoll, function(err, poll) {
     if(err) { return handleError(res, err); }
-    return res.render(path + '/public/show.ejs', {
-				poll: poll
-		});
+    var showObj = { poll: poll, user: null };
+    if (req.user) {
+      showObj['user'] = req.user._id.toString()
+		}
+    res.render(path + '/public/show.ejs', showObj);
   });
 };
 
@@ -52,7 +57,7 @@ exports.update = function(req, res) {
     var updated = _.extend(poll, req.body);
 
     // Must be owner or be an admin to update
-    if(poll.owner.toString() === req.user._id.toString()) {
+    if(poll.user.toString() === req.user._id.toString()) {
       updated.save(function (err) {
         if (err) { return handleError(res, err); }
         return res.status(200).json(poll);
@@ -91,9 +96,11 @@ exports.vote = function(req, res) {
 
     updated.save(function (err) {
       if (err) { return handleError(res, err); }
-      return res.render(path + '/public/show.ejs', {
-				poll: poll
-		  });
+      var showObj = { poll: poll, user: null };
+      if (req.user) {
+        showObj['user'] = req.user._id.toString()
+  		}
+      res.render(path + '/public/show.ejs', showObj);
     });
   });
 };
@@ -105,10 +112,15 @@ exports.destroy = function(req, res) {
     if(!poll) { return res.status(404).send('Not Found'); }
 
     // Only owners and admins may delete
-    if(poll.owner.toString() === req.user._id.toString()) {
+    if(poll.user.toString() === req.user._id.toString()) {
       poll.remove(function(err) {
         if(err) { return handleError(res, err); }
-        return res.status(204).send('No Content');
+        Poll.find(function (err, polls) {
+          if(err) { return handleError(res, err); }
+          return res.render(path + '/public/index.ejs', {
+      				polls: polls
+      		});
+        });
       });
     } else {
       return res.status(403).send('You do not have permission to delete this item');
