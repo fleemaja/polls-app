@@ -1,0 +1,24 @@
+<head>
+    <title>New Poll</title>
+    
+    <link href="/public/css/clementine.css" rel="stylesheet" type="text/css">
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+	<link href="/public/css/main.css" rel="stylesheet" type="text/css">
+</head>
+
+<%- include header.ejs %>
+
+<div class="jumbotron" id="new-poll">
+    <h1>Make a new poll!</h1>
+    <form action="/newpoll" method="post">
+        <fieldset class="form-group">
+            <label for="pollTitleInput">Title:</label>
+            <input name="title" type="text" class="form-control" id="pollTitleInput" placeholder="Enter Poll Title">
+        </fieldset>
+        <fieldset class="form-group">
+            <label for="exampleTextarea">Options (separated by line):</label>
+            <textarea name="options" class="form-control" id="exampleTextarea" rows="4"></textarea>
+        </fieldset>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>

@@ -6,9 +6,11 @@ var path = process.cwd();
 exports.index = function(req, res) {
   Poll.find(function (err, polls) {
     if(err) { return handleError(res, err); }
-    res.render(path + '/public/index.ejs', {
-				polls: polls
-		});
+    var showObj = { polls: polls, user: null };
+    if (req.user) {
+      showObj['user'] = req.user._id.toString()
+		}
+    res.render(path + '/public/index.ejs', showObj);
   });
 };
 
@@ -17,7 +19,8 @@ exports.userPolls = function(req, res) {
   Poll.find({ user: req.user._id }, function (err, polls) {
     if(err) { return handleError(res, err); }
     res.render(path + '/public/mypolls.ejs', {
-				polls: polls
+				polls: polls,
+				user: req.user._id.toString()
 		});
   });
 };
@@ -58,26 +61,6 @@ exports.create = function(req, res) {
   });
 };
 
-// Updates an existing poll in the DB.
-exports.update = function(req, res) {
-  if(req.body._id) { delete req.body._id; }
-  Poll.findById(req.params.id, function (err, poll) {
-    if (err) { return handleError(res, err); }
-    if(!poll) { return res.status(404).send('Not Found'); }
-    var updated = _.extend(poll, req.body);
-
-    // Must be owner or be an admin to update
-    if(poll.user.toString() === req.user._id.toString()) {
-      updated.save(function (err) {
-        if (err) { return handleError(res, err); }
-        return res.status(200).json(poll);
-      });
-    } else {
-      return res.status(403).send('You do not have permission to update this item');
-    }
-  });
-};
-
 // adds a voter to the object
 exports.vote = function(req, res) {
   var choice = req.body.option;
@@ -88,21 +71,19 @@ exports.vote = function(req, res) {
     if(!poll) { return res.status(404).send('Not Found'); }
     var updated = _.extend(poll, req.body);
     
+    var newOption = true;
     updated.options.forEach(function(option) {
       if (option.text === choice) {
         option.votes += 1;
+        newOption = false;
       }
     });
-
-    // Add voter IP
-    // var ipAddr = req.headers["x-forwarded-for"];
-    // if (ipAddr){
-    //   var list = ipAddr.split(",");
-    //   ipAddr = list[list.length-1];
-    // } else {
-    //   ipAddr = req.connection.remoteAddress;
-    // }
-    // updated.voters.push(ipAddr);
+    if (newOption) {
+      updated.options.push({
+        text: choice,
+        votes: 1
+      })
+    }
 
     updated.save(function (err) {
       if (err) { return handleError(res, err); }
@@ -127,9 +108,11 @@ exports.destroy = function(req, res) {
         if(err) { return handleError(res, err); }
         Poll.find(function (err, polls) {
           if(err) { return handleError(res, err); }
-          return res.render(path + '/public/index.ejs', {
-      				polls: polls
-      		});
+          var showObj = { polls: polls, user: null };
+          if (req.user) {
+            showObj['user'] = req.user._id.toString();
+          }
+          return res.render(path + '/public/index.ejs', showObj);
         });
       });
     } else {

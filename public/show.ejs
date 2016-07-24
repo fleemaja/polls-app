@@ -5,48 +5,42 @@
 	<head>
 		<title><%= poll.title %></title>
 		
-		<link href="/public/css/main.css" rel="stylesheet" type="text/css">
+		<link href="/public/css/clementine.css" rel="stylesheet" type="text/css">
 		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+		<link href="/public/css/main.css" rel="stylesheet" type="text/css">
 	</head>
-
-	<header>
-	    <nav class="navbar navbar-default navbar-static-top">
-            <div class="navbar-header">
-    	      <a class="navbar-brand" href="/">Polls</a>
-    	    </div>
-            <ul class="nav navbar-nav navbar-right">
-              <li><a class="menu" href="/mypolls">My Polls</a></li>
-              <li><a class="menu" href="/newpoll">New Poll</a></li>
-    		  <li><a class="menu" href="/logout">Logout</a></li>
-            </ul>
-        </nav>
-	</header>
+	
+	<%- include header.ejs %>
 
 	<body>
-		
-		<div class="jumbotron">
-		    <form action="/polls/<%= poll.id %>" method="post">
-			    <p><%= poll.title %></p>
-			    <label>I'd like to vote for...: </label>
-			    <% poll.options.forEach(function(option) { %>
-                    <input type="radio" name="option" value="<%= option.text %>"><%= option.text + option.votes %><br>
-                <% }) %>
-                <input type="radio" name="option" id="custom-radio">I'd like a custom option...</br>
-                <input type="text" name="option" id="custom-text">
-                <input class="btn btn-primary btn-block" type="submit" value="Submit">
-            </form>
-            
-            <% if (user != null && poll.user.toString() === user) { %>
-                <form action="/delete/<%= poll.id %>" method="post">
-                    <button class="btn btn-danger btn-block">Remove this Poll</button>
+		<div class="jumbotron" id="show-poll">
+		    <div class="row">
+              <div class="col-md-6">
+                  <form action="/polls/<%= poll.id %>" method="post">
+    			    <h2 id="poll-title"><%= poll.title %></h2>
+    			    <% poll.options.forEach(function(option) { %>
+                        <input type="radio" name="option" value="<%= option.text %>">
+                        <span class="text-option"><%= option.text %></span><br>
+                    <% }) %>
+                    <input type="radio" name="option" id="custom-radio" value="">
+                    <span class="text-option">I'd like a custom option...</span></br>
+                    <input type="text" name="option-text" id="custom-text">
+                    <input class="btn btn-primary" type="submit" value="Submit">
                 </form>
-            <% } %>
+              </div>
+              <div class="col-md-6" id="graph">
+                  <canvas id="myDoughnutChart" width="400" height="400" 
+            		      chart-data="<%= poll.options.map(function(option) { return option.votes }) %>" 
+            		      chart-labels="<%= poll.options.map(function(option) { return option.text }) %>">
+            	  </canvas>
+            	  <% if (user != null && poll.user.toString() === user) { %>
+                    <form action="/delete/<%= poll.id %>" method="post">
+                        <button class="btn btn-danger">Remove this Poll</button>
+                    </form>
+                <% } %>
+              </div>
+            </div>
 		</div>
-		
-		<canvas id="myDoughnutChart" width="10" height="10" 
-		        chart-data="<%= poll.options.map(function(option) { return option.votes }) %>" 
-		        chart-labels="<%= poll.options.map(function(option) { return option.text }) %>">
-		</canvas>
 		
 		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.6/Chart.bundle.min.js"></script>
@@ -63,6 +57,11 @@
         		        $("#custom-text").hide();
         		    }
                 });
+                
+                $('#custom-text').change(function() {
+                    var customVal = $('#custom-text').val();
+                    $('#custom-radio').val(customVal);
+                })
                 
                 var ctx = $("#myDoughnutChart");
                 

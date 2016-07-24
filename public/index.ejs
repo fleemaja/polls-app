@@ -5,31 +5,20 @@
 	<head>
 		<title>All Polls</title>
 		
+		<link href="/public/css/clementine.css" rel="stylesheet" type="text/css">
 		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 		<link href="/public/css/main.css" rel="stylesheet" type="text/css">
 	</head>
 
-	<header>
-	    <nav class="navbar navbar-default navbar-static-top">
-	    	<div class="navbar-header">
-		      <a class="navbar-brand" href="/">Polls</a>
-		    </div>
-
-          <ul class="nav navbar-nav navbar-right">
-            <li><a class="menu" href="/mypolls">My Polls</a></li>
-            <li><a class="menu" href="/newpoll">New Poll</a></li>
-    		<li><a class="menu" href="/logout">Logout</a></li>
-          </ul>
-        </nav>
-	</header>
+   <%- include header.ejs %>
 
 	<body>
-		
-		<div class="container">
-			<p>All Polls</p>
+		<div class="jumbotron">
+			<h1>All Polls</h1>
+			<h3>Select a poll to see the results and vote, or sign-in to make a new poll.</h3>
 			<ul>
 				<% polls.forEach(function(poll) { %>
-					<li><a href="/polls/<%= poll.id %>"><%= poll.title %></a></li>
+					<li class="poll-items"><a href="/polls/<%= poll.id %>"><%= poll.title %></a></li>
 				<% }) %>
 			</ul>
 		</div>

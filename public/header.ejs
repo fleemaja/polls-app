@@ -1,0 +1,23 @@
+<header>
+    <nav class="navbar navbar-default">
+        <div class="navbar-header">
+	      <a class="navbar-brand" href="/">Polls</a>
+	    </div>
+        <ul class="nav navbar-nav navbar-right">
+          <% if (user) { %>
+            <li><a class="menu" href="/mypolls">My Polls</a></li>
+            <li><a class="menu" href="/newpoll">New Poll</a></li>
+		    <li><a class="menu" href="/logout">Logout</a></li>
+		  <% } else { %>
+              <li id="github-login">
+                <a href="/auth/github">
+    				<div class="btn" id="login-btn">
+    					<img src="/public/img/github_32px.png" alt="github logo" />
+    					<p>LOGIN WITH GITHUB</p>
+    				</div>
+    			</a>
+    		  </li>
+    	  <% } %>
+        </ul>
+    </nav>
+</header>

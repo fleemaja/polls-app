@@ -10,7 +10,7 @@ module.exports = function (app, passport) {
 		if (req.isAuthenticated()) {
 			return next();
 		} else {
-			res.redirect('/login');
+			return pollController.index(req, res);
 		}
 	}
 
@@ -21,15 +21,10 @@ module.exports = function (app, passport) {
 		    pollController.index(req, res);
 		});
 
-	app.route('/login')
-		.get(function (req, res) {
-			res.sendFile(path + '/public/login.html');
-		});
-
 	app.route('/logout')
 		.get(function (req, res) {
 			req.logout();
-			res.redirect('/login');
+			res.redirect('/');
 		});
 
 	app.route('/mypolls')
@@ -48,17 +43,14 @@ module.exports = function (app, passport) {
 	app.route('/auth/github/callback')
 		.get(passport.authenticate('github', {
 			successRedirect: '/',
-			failureRedirect: '/login'
+			failureRedirect: '/'
 		}));
-
-	app.route('/api/:id/clicks')
-		.get(isLoggedIn, clickHandler.getClicks)
-		.post(isLoggedIn, clickHandler.addClick)
-		.delete(isLoggedIn, clickHandler.resetClicks);
 		
     app.route('/newpoll')
 		.get(isLoggedIn, function (req, res) {
-			res.sendFile(path + '/public/newpoll.html');
+			res.render(path + '/public/newpoll.ejs', {
+				user: req.user._id.toString()
+			});
 		})
 		.post(isLoggedIn, function(req, res) {
 			pollController.create(req, res);
