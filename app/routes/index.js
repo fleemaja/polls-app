@@ -32,9 +32,9 @@ module.exports = function (app, passport) {
 			res.redirect('/login');
 		});
 
-	app.route('/profile')
+	app.route('/mypolls')
 		.get(isLoggedIn, function (req, res) {
-			res.sendFile(path + '/public/profile.html');
+			pollController.userPolls(req, res);
 		});
 
 	app.route('/api/:id')

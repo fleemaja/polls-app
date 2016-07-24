@@ -12,6 +12,16 @@ exports.index = function(req, res) {
   });
 };
 
+// Get list of polls
+exports.userPolls = function(req, res) {
+  Poll.find({ user: req.user._id }, function (err, polls) {
+    if(err) { return handleError(res, err); }
+    res.render(path + '/public/mypolls.ejs', {
+				polls: polls
+		});
+  });
+};
+
 // Get a single poll
 exports.show = function(req, res) {
   Poll.findById(req.params.id, function (err, poll) {

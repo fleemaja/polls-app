@@ -15,7 +15,7 @@
     	      <a class="navbar-brand" href="/">Polls</a>
     	    </div>
             <ul class="nav navbar-nav navbar-right">
-              <li><a class="menu" href="/profile">Profile</a></li>
+              <li><a class="menu" href="/mypolls">My Polls</a></li>
               <li><a class="menu" href="/newpoll">New Poll</a></li>
     		  <li><a class="menu" href="/logout">Logout</a></li>
             </ul>
@@ -31,6 +31,8 @@
 			    <% poll.options.forEach(function(option) { %>
                     <input type="radio" name="option" value="<%= option.text %>"><%= option.text + option.votes %><br>
                 <% }) %>
+                <input type="radio" name="option" id="custom-radio">I'd like a custom option...</br>
+                <input type="text" name="option" id="custom-text">
                 <input class="btn btn-primary btn-block" type="submit" value="Submit">
             </form>
             
@@ -50,16 +52,24 @@
 		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.6/Chart.bundle.min.js"></script>
 		
 		<script>
+		    $("input:radio:first").attr('checked', true);
+		    $("#custom-text").hide();
 		    
             $( document ).ready(function() {
+                $('input:radio').change(function() {
+                    if ($('#custom-radio').is(":checked")) {
+        		        $("#custom-text").show();
+        		    } else {
+        		        $("#custom-text").hide();
+        		    }
+                });
+                
                 var ctx = $("#myDoughnutChart");
                 
                 var optionVotes = ctx.get(0).getAttribute("chart-data").split(",").map(function(item) {
                                       return parseInt(item, 10);
                                   });
                 var optionLabels = ctx.get(0).getAttribute("chart-labels").split(",");
-                
-                $("input:radio:first").attr('checked', true);
                 
                 var myDoughnutChart = new Chart(ctx, {
                     type: 'doughnut',
