@@ -17,7 +17,7 @@ module.exports = function (app, passport) {
 	var clickHandler = new ClickHandler();
 
 	app.route('/')
-		.get(isLoggedIn, function (req, res) {
+		.get(function (req, res) {
 		    pollController.index(req, res);
 		});
 
@@ -70,7 +70,7 @@ module.exports = function (app, passport) {
 	  });
 	  
     app.route('/delete/:id')
-       .post(function(req, res) {
+       .post(isLoggedIn, function(req, res) {
        	   pollController.destroy(req, res);
        })
 };

@@ -10,7 +10,7 @@ exports.index = function(req, res) {
     if (req.user) {
       showObj['user'] = req.user._id.toString()
 		}
-    res.render(path + '/public/index.ejs', showObj);
+    return res.render(path + '/public/index.ejs', showObj);
   });
 };
 
@@ -18,7 +18,7 @@ exports.index = function(req, res) {
 exports.userPolls = function(req, res) {
   Poll.find({ user: req.user._id }, function (err, polls) {
     if(err) { return handleError(res, err); }
-    res.render(path + '/public/mypolls.ejs', {
+    return res.render(path + '/public/mypolls.ejs', {
 				polls: polls,
 				user: req.user._id.toString()
 		});
@@ -34,13 +34,15 @@ exports.show = function(req, res) {
     if (req.user) {
       showObj['user'] = req.user._id.toString()
 		}
-    res.render(path + '/public/show.ejs', showObj);
+    return res.render(path + '/public/show.ejs', showObj);
   });
 };
 
 // Creates a new poll in the DB.
 exports.create = function(req, res) {
   var options = req.body.options.split("\r\n");
+  var options = options.map(function(op) { return op.slice(0, 50) });
+  var options = options.getUnique();
   var parsedPoll = req.body;
   var parsedOptions = [];
   for (var i = 0; i < options.length; i++) {
@@ -57,13 +59,13 @@ exports.create = function(req, res) {
     if (req.user) {
       showObj['user'] = req.user._id.toString()
 		}
-    res.render(path + '/public/show.ejs', showObj);
+    return res.render(path + '/public/show.ejs', showObj);
   });
 };
 
 // adds a voter to the object
 exports.vote = function(req, res) {
-  var choice = req.body.option;
+  var choice = req.body.option.slice(0, 50);
   
   if(req.body._id) { delete req.body._id; }
   Poll.findById(req.params.id, function (err, poll) {
@@ -78,7 +80,7 @@ exports.vote = function(req, res) {
         newOption = false;
       }
     });
-    if (newOption) {
+    if (newOption && choice != "") {
       updated.options.push({
         text: choice,
         votes: 1
@@ -91,7 +93,7 @@ exports.vote = function(req, res) {
       if (req.user) {
         showObj['user'] = req.user._id.toString()
   		}
-      res.render(path + '/public/show.ejs', showObj);
+      return res.render(path + '/public/show.ejs', showObj);
     });
   });
 };
@@ -123,4 +125,16 @@ exports.destroy = function(req, res) {
 
 function handleError(res, err) {
   return res.status(500).send(err);
+}
+
+Array.prototype.getUnique = function(){
+   var u = {}, a = [];
+   for(var i = 0, l = this.length; i < l; ++i){
+      if(u.hasOwnProperty(this[i])) {
+         continue;
+      }
+      a.push(this[i]);
+      u[this[i]] = 1;
+   }
+   return a;
 }

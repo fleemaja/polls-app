@@ -40,6 +40,9 @@ ul {
 
 .navbar-brand {
 	margin-top: 10px;
+	margin-left: 20px;
+	font-size: 32px;
+	font-weight: 900;
 }
 
 #new-poll {

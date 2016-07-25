@@ -29,6 +29,8 @@ PollSchema.pre('save', function(next) {
   this.title = sanitizeHtml(this.title, sanitize);
   this.options = this.options.map(function(option){
       option.text = sanitizeHtml(option.text, sanitize);
+      // 50 char max
+      option.text = option.text.slice(0, 50);
       return option;
     });
   next();

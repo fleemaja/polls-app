@@ -15,7 +15,7 @@
 	<body>
 		<div class="jumbotron">
 			<h1>All Polls</h1>
-			<h3>Select a poll to see the results and vote, or sign-in to make a new poll.</h3>
+			<h3>Select a poll to see the results and vote</h3>
 			<ul>
 				<% polls.forEach(function(poll) { %>
 					<li class="poll-items"><a href="/polls/<%= poll.id %>"><%= poll.title %></a></li>
