@@ -22,9 +22,11 @@
                         <input type="radio" name="option" value="<%= option.text %>">
                         <span class="text-option"><%= option.text %></span><br>
                     <% }) %>
-                    <input type="radio" name="option" id="custom-radio" value="">
-                    <span class="text-option">I'd like a custom option...</span></br>
-                    <input type="text" name="option-text" id="custom-text">
+                    <% if (user) { %>
+                        <input type="radio" name="option" id="custom-radio" value="">
+                        <span class="text-option">I'd like a custom option...</span></br>
+                        <input type="text" name="option-text" id="custom-text">
+                    <% } %>
                     <input class="btn btn-primary" type="submit" value="Submit">
                 </form>
               </div>
